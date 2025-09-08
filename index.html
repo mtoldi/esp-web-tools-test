@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="hr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Inkplate Web Flash</title>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/esp-web-tools@10/dist/web/install-button.js"></script>
+    <link rel="icon" href="data:," />
+    <style>
+      :root { font-family: system-ui, sans-serif; }
+      body { max-width: 720px; margin: 40px auto; padding: 0 16px; }
+      header { margin-bottom: 16px; }
+      select, button { font-size: 16px; padding: 10px; }
+      .row { display: grid; gap: 8px; margin: 16px 0; }
+      .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Inkplate Web Flash</h1>
+      <p>Odaberi projekt i flešaj ga iz preglednika.</p>
+    </header>
+
+    <section class="card">
+      <div class="row">
+        <label for="project">Projekt</label>
+        <select id="project"></select>
+      </div>
+
+      <!-- ESP Web Tools gumb -->
+      <esp-web-install-button id="installBtn" manifest="./manifests/openmeteo.json">
+        <button slot="activate">Flešaj na uređaj</button>
+        <span slot="unsupported">Web Serial nije dostupan (probaj Chrome/Edge na desktopu).</span>
+      </esp-web-install-button>
+    </section>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

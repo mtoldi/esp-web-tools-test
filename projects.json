@@ -1,0 +1,7 @@
+[
+  {
+    "id": "openmeteo",
+    "name": "Open-Meteo Weather Station (Inkplate 6)",
+    "manifest": "./manifests/openmeteo.json"
+  }
+]
