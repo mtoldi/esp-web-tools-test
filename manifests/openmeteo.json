@@ -6,7 +6,7 @@
     {
       "chipFamily": "ESP32",
       "parts": [
-        { "path": "../bins/inkplate-openmeteo-merged.bin", "offset": 0 }
+        { "path": "../bins/6obicni-firmware-merged.bin", "offset": 0 }
       ]
     }
   ]

@@ -10,15 +10,18 @@
       :root { font-family: system-ui, sans-serif; }
       body { max-width: 720px; margin: 40px auto; padding: 0 16px; }
       header { margin-bottom: 16px; }
-      select, button { font-size: 16px; padding: 10px; }
+      select, button, input { font-size: 16px; padding: 10px; }
       .row { display: grid; gap: 8px; margin: 16px 0; }
       .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; }
+      label { font-weight: 600; margin-top: 8px; display: block; }
+      .ok { color: green; }
+      .err { color: red; }
     </style>
   </head>
   <body>
     <header>
       <h1>Inkplate Web Flash</h1>
-      <p>Odaberi projekt i flešaj ga iz preglednika.</p>
+      <p>Odaberi projekt, flešaj firmware i/ili spremi postavke.</p>
     </header>
 
     <section class="card">
@@ -32,6 +35,41 @@
         <button slot="activate">Flešaj na uređaj</button>
         <span slot="unsupported">Web Serial nije dostupan (probaj Chrome/Edge na desktopu).</span>
       </esp-web-install-button>
+    </section>
+
+    <section class="card">
+      <h2>Postavke uređaja</h2>
+      <label for="deviceUrl">Device URL</label>
+      <input id="deviceUrl" placeholder="http://192.168.4.1" value="http://192.168.4.1">
+
+      <label for="ssid">Wi-Fi SSID</label>
+      <input id="ssid" placeholder="MojWiFi">
+
+      <label for="password">Wi-Fi lozinka</label>
+      <input id="password" type="password" placeholder="••••••••">
+
+      <label for="username">Korisničko ime</label>
+      <input id="username" placeholder="Maja">
+
+      <label for="city">Grad</label>
+      <input id="city" placeholder="Osijek">
+
+      <label for="timeZone">Time zone (UTC offset)</label>
+      <input id="timeZone" type="number" value="2">
+
+      <label for="latitude">Latitude</label>
+      <input id="latitude" type="number" step="0.0001" value="45.5550">
+
+      <label for="longitude">Longitude</label>
+      <input id="longitude" type="number" step="0.0001" value="18.6955">
+
+      <label>
+        <input type="checkbox" id="metricUnits" checked>
+        Metric units (°C, km/h)
+      </label>
+
+      <button id="saveBtn">Spremi postavke (bez flasha)</button>
+      <p id="status"></p>
     </section>
 
     <script type="module" src="./app.js"></script>
