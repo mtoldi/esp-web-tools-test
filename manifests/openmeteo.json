@@ -2,12 +2,10 @@
   "name": "Inkplate Open-Meteo",
   "version": "1.0.0",
   "new_install_prompt_erase": true,
+  "new_install_improv_wait_time": 30,
   "builds": [
-    {
-      "chipFamily": "ESP32",
-      "parts": [
-        { "path": "../bins/6obicni-firmware-merged.bin", "offset": 0 }
-      ]
+    { "chipFamily": "ESP32",
+      "parts": [ { "path": "../bins/Inkplate6FLICK_OpenMeteo_Weather_Station-merged.bin", "offset": 0 } ]
     }
   ]
 }
