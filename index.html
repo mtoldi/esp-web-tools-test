@@ -4,73 +4,160 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Inkplate Web Flash</title>
+    <!-- ESP Web Tools -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/esp-web-tools@10/dist/web/install-button.js"></script>
     <link rel="icon" href="data:," />
     <style>
-      :root { font-family: system-ui, sans-serif; }
-      body { max-width: 720px; margin: 40px auto; padding: 0 16px; }
+      :root { font-family: system-ui, sans-serif; color-scheme: light dark; }
+      body { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
       header { margin-bottom: 16px; }
       select, button, input { font-size: 16px; padding: 10px; }
-      .row { display: grid; gap: 8px; margin: 16px 0; }
+      .grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 16px; align-items: start; }
       .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; }
-      label { font-weight: 600; margin-top: 8px; display: block; }
-      .ok { color: green; }
-      .err { color: red; }
+      .row { display: grid; gap: 8px; margin: 12px 0; }
+      label { font-weight: 600; display: block; }
+      .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+      .hint { font-size: 13px; opacity: .8; }
+      textarea.logs { width: 100%; height: 420px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+      .badges { display:flex; gap:8px; flex-wrap: wrap; margin: 8px 0 12px; }
+      .badge { font-size: 12px; padding: 4px 8px; border-radius: 999px; border:1px solid #ccc; }
+      .ok { color: #1a7f37; }
+      .err { color: #b11; }
+      .muted { opacity:.7;}
+      .two-col { display:grid; grid-template-columns: 1fr 1fr; gap:8px; }
     </style>
   </head>
   <body>
     <header>
       <h1>Inkplate Web Flash</h1>
-      <p>Odaberi projekt, flashaj firmware i/ili spremi postavke.</p>
+      <p>Flash → Wi-Fi preko USB-a → Spremi postavke — uz stalne serijske logove.</p>
     </header>
 
-    <section class="card">
-      <div class="row">
-        <label for="project">Projekt</label>
-        <select id="project"></select>
-      </div>
+    <div class="grid">
+      <!-- Lijevo: Flash + Postavke -->
+      <section class="card">
+        <h2>Flash &amp; Postavke</h2>
 
-      <!-- ESP Web Tools gumb -->
-      <esp-web-install-button id="installBtn" manifest="./manifests/openmeteo.json">
-        <button slot="activate">Flashaj na uređaj</button>
-        <span slot="unsupported">Web Serial nije dostupan (probaj Chrome/Edge na desktopu).</span>
-      </esp-web-install-button>
-    </section>
+        <div class="row">
+          <label for="project">Projekt</label>
+          <select id="project"></select>
+        </div>
 
-    <section class="card">
-      <h2>Postavke uređaja</h2>
-      <label for="deviceUrl">Device URL</label>
-      <input id="deviceUrl" placeholder="http://192.168.4.1" value="http://192.168.4.1">
+        <!-- ESP Web Tools gumb -->
+        <esp-web-install-button id="installBtn" manifest="./manifests/openmeteo-flick.json">
+          <button slot="activate">Flashaj na uređaj</button>
+          <span slot="unsupported">Web Serial nije dostupan (probaj Chrome/Edge na desktopu).</span>
+        </esp-web-install-button>
 
-      <label for="ssid">Wi-Fi SSID</label>
-      <input id="ssid" placeholder="MojWiFi">
+        <div class="row">
+          <div class="actions">
+            <label class="hint"><input id="autoImprov" type="checkbox" checked> Nakon flasha automatski pošalji Wi-Fi</label>
+            <label class="hint"><input id="autoSerial" type="checkbox" checked> Auto-prikači serijske logove</label>
+          </div>
+        </div>
 
-      <label for="password">Wi-Fi lozinka</label>
-      <input id="password" type="password" placeholder="••••••••">
+        <hr/>
 
-      <label for="username">Korisničko ime</label>
-      <input id="username" placeholder="Maja">
+        <div class="row">
+          <h3>Wi-Fi</h3>
 
-      <label for="city">Grad</label>
-      <input id="city" placeholder="Osijek">
+          <label for="ssidSelect">Odaberi mrežu</label>
+          <div class="two-col">
+            <select id="ssidSelect"></select>
+            <input id="ssidInput" placeholder="Ili upiši SSID ručno…">
+          </div>
 
-      <label for="timeZone">Time zone (UTC offset)</label>
-      <input id="timeZone" type="number" value="2">
+          <label for="password">Lozinka</label>
+          <input id="password" type="password" placeholder="••••••••">
 
-      <label for="latitude">Latitude</label>
-      <input id="latitude" type="number" step="0.0001" value="45.5550">
+          <div class="actions">
+            <button id="scanBtn">Skeniraj Wi-Fi (preko USB-a)</button>
+            <button id="improvBtn">Pošalji Wi-Fi preko USB-a</button>
+            <span class="hint">Scan ovisi o podršci Improv biblioteke u firmwareu.</span>
+          </div>
+        </div>
 
-      <label for="longitude">Longitude</label>
-      <input id="longitude" type="number" step="0.0001" value="18.6955">
+        <hr/>
 
-      <label>
-        <input type="checkbox" id="metricUnits" checked>
-        Metric units (°C, km/h)
-      </label>
+        <div class="row">
+          <h3>Postavke uređaja</h3>
 
-      <button id="saveBtn">Spremi postavke (bez flasha)</button>
-      <p id="status"></p>
-    </section>
+          <div class="two-col">
+            <div>
+              <label for="deviceUrl">Device URL</label>
+              <input id="deviceUrl" placeholder="http://<ip-uređaja>">
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <button id="probeBtn">Provjeri /info</button>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <label for="username">Korisničko ime</label>
+              <input id="username" placeholder="Maja">
+            </div>
+            <div>
+              <label for="city">Grad</label>
+              <input id="city" placeholder="Osijek">
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <label for="timeZone">Time zone (UTC offset)</label>
+              <input id="timeZone" type="number" value="2">
+            </div>
+            <div>
+              <label for="metricUnits">Jedinice</label>
+              <select id="metricUnits">
+                <option value="true" selected>Metric (°C, km/h)</option>
+                <option value="false">Imperial (°F, mph)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <label for="latitude">Latitude</label>
+              <input id="latitude" type="number" step="0.0001" value="45.5550">
+            </div>
+            <div>
+              <label for="longitude">Longitude</label>
+              <input id="longitude" type="number" step="0.0001" value="18.6955">
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="saveBtn">Spremi postavke (bez flasha)</button>
+            <span id="status"></span>
+          </div>
+          <p class="hint">URL se puni automatski nakon Wi-Fi spajanja. Ako ne, koristi “Visit device” iz install popupa ili DHCP listu routera.</p>
+        </div>
+      </section>
+
+      <!-- Desno: Logovi + status -->
+      <section class="card">
+        <h2>Log &amp; Status</h2>
+
+        <div class="badges">
+          <span id="portBadge"   class="badge muted">PORT: n/a</span>
+          <span id="improvBadge" class="badge muted">IMPROV: n/a</span>
+          <span id="wifiBadge"   class="badge muted">WIFI: n/a</span>
+          <span id="httpBadge"   class="badge muted">HTTP: n/a</span>
+        </div>
+
+        <textarea id="logs" class="logs" readonly></textarea>
+        <div class="actions">
+          <button id="serialConnect">Spoji serial log</button>
+          <button id="serialDisconnect">Odspoji</button>
+          <button id="clearLogs">Očisti log</button>
+        </div>
+
+        <p class="hint">Log panel ostaje stalno aktivan (nakon flasha mi ponovno otvorimo serijski port).</p>
+      </section>
+    </div>
 
     <script type="module" src="./app.js"></script>
   </body>
